@@ -8,18 +8,30 @@ let searchPokemon = 1;
 
 const buscarPokemon = async (pokemon) => {
     const dados = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon}`);
-    const data = await dados.json();
-    return data;
+    
+    if (dados.status === 200) {
+      const data = await dados.json();
+      console.log(data)
+      return data;
+    }
 }
+ renderPokemon = async (pokemon) => {
+   
+   const data = await buscarPokemon(pokemon)
 
-const renderPokemon = async (pokemon) => {
-    const data = await buscarPokemon(pokemon)
-    pokemonName.innerHTML = data.name;
-    pokemonNumber.innerHTML = data.id;
-    pokemonImage.src = data.sprites.front_shiny
-    input.value = '';
-    searchPokemon = data.id;
-}
+    if (data) {
+      pokemonImage.style.display = 'block';
+      pokemonName.innerHTML = data.name;
+      pokemonNumber.innerHTML = data.id;
+      pokemonImage.src = data.sprites.front_shiny
+      input.value = '';
+      searchPokemon = data.id;
+    } else {
+      pokemonImage.style.display = 'none';
+      pokemonName.innerHTML = 'não encontrado';
+      pokemonNumber.innerHTML = '';
+    }
+  }
 
 form.addEventListener('submit', (event) => {
     event.preventDefault();
