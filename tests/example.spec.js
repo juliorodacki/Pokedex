@@ -1,19 +1,51 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, request, expect } = require('@playwright/test');
+const exp = require('constants');
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+test('carregando pagina inicial pokemon', async ({ page }) => {
+  await page.goto('http://127.0.0.1:5500/');
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
+  const locatorNumber = page.locator('.pokemon__number');
+  await expect(locatorNumber).toHaveText(/1/);
+  
+  const locatorName = page.locator('.pokemon__name');
+  await expect(locatorName).toHaveText(/bulbasaur/);
+
+  const locatorImage = page.locator('.pokemon__image');
+  console.log(locatorImage, 'imagem')
+  await expect(locatorImage).toHaveAttribute('src', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/1.png');
+
 });
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+test('pokemon não encontrado?', async ({page}) => {
+  await page.goto('http://127.0.0.1:5500/');
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
+  const locatorInput = page.locator('.input__search');
+  await expect(locatorInput).toHaveAttribute('value', '')
+  await locatorInput.fill('1326')
+  await locatorInput.press('Enter')
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+  const locatorName = page.locator('.pokemon__name');
+  await expect(locatorName).toHaveText('não encontrado');
+})
+
+test('procurando pokemon e encontrando ',async ({page}) => {
+  await page.goto('http://127.0.0.1:5500/');
+
+  const locatorInput = page.locator('.input__search');
+  await expect(locatorInput).toHaveAttribute('value', '')
+  await locatorInput.fill('pikachu')
+  await locatorInput.press('Enter')
+    
+  const locatorName = page.locator('.pokemon__name');
+  await expect(locatorName).toHaveText(/pikachu/);
+
+  const locatorImage = page.locator('.pokemon__image');
+  console.log(locatorImage, 'imagem')
+  await expect(locatorImage).toHaveAttribute('src', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/25.png');
+
+  const locatorNumber = page.locator('.pokemon__number');
+  await expect(locatorNumber).toHaveText(/25/);
+
 });
+
